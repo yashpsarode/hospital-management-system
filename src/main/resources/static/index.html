@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System | Healthcare Portal</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Auth View (Shown when not logged in) -->
+    <div id="authView" class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo-circle">
+                    <i class="fa-solid fa-hospital"></i>
+                </div>
+                <h2>LifeCare Hospital Portal</h2>
+                <p>Enterprise Healthcare & Patient Care Platform</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Register Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginUsername"><i class="fa-solid fa-user"></i> Username</label>
+                    <input type="text" id="loginUsername" placeholder="e.g. admin or dr.john" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Sign In</span> <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="auth-form hidden" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regFullName"><i class="fa-solid fa-id-card"></i> Full Name</label>
+                    <input type="text" id="regFullName" placeholder="Dr. Alice Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="regUsername"><i class="fa-solid fa-user"></i> Username</label>
+                    <input type="text" id="regUsername" placeholder="alice.smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <input type="email" id="regEmail" placeholder="alice@hospital.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
+                    <input type="password" id="regPassword" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label for="regRole"><i class="fa-solid fa-user-tag"></i> Role</label>
+                    <select id="regRole" required>
+                        <option value="ROLE_DOCTOR">Doctor</option>
+                        <option value="ROLE_NURSE">Nurse</option>
+                        <option value="ROLE_PHARMACIST">Pharmacist</option>
+                        <option value="ROLE_RECEPTIONIST">Receptionist</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <span>Create Account</span> <i class="fa-solid fa-user-plus"></i>
+                </button>
+            </form>
+
+            <!-- Quick Demo Login Switcher -->
+            <div class="demo-logins">
+                <div class="demo-label">Quick Sign-In (Pre-seeded Demo Accounts):</div>
+                <div class="demo-grid">
+                    <button class="btn btn-sm btn-outline" onclick="fillAndLogin('admin', 'admin123')">
+                        <i class="fa-solid fa-shield-halved"></i> Admin
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="fillAndLogin('dr.john', 'doctor123')">
+                        <i class="fa-solid fa-user-doctor"></i> Doctor
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="fillAndLogin('pharmacist', 'pharmacy123')">
+                        <i class="fa-solid fa-pills"></i> Pharmacist
+                    </button>
+                    <button class="btn btn-sm btn-outline" onclick="fillAndLogin('receptionist', 'reception123')">
+                        <i class="fa-solid fa-hospital-user"></i> Receptionist
+                    </button>
+                </div>
+            </div>
+
+            <div id="authAlert" class="alert hidden"></div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard View (Shown after login) -->
+    <div id="mainView" class="app-layout hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-icon"><i class="fa-solid fa-cross"></i></div>
+                    <div>
+                        <h3>LifeCare</h3>
+                        <span class="brand-sub">Hospital Management</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-badge">
+                <div class="avatar"><i class="fa-solid fa-user-circle"></i></div>
+                <div class="user-info">
+                    <div id="currentUserName" class="user-name">Loading...</div>
+                    <div id="currentUserRole" class="role-tag">ROLE_ADMIN</div>
+                </div>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#dashboard" class="nav-item active" onclick="navigate('dashboard')">
+                    <i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span>
+                </a>
+                <a href="#patients" class="nav-item" onclick="navigate('patients')">
+                    <i class="fa-solid fa-hospital-user"></i> <span>Patients</span>
+                </a>
+                <a href="#doctors" class="nav-item" onclick="navigate('doctors')">
+                    <i class="fa-solid fa-user-doctor"></i> <span>Doctors</span>
+                </a>
+                <a href="#appointments" class="nav-item" onclick="navigate('appointments')">
+                    <i class="fa-solid fa-calendar-check"></i> <span>Appointments</span>
+                </a>
+                <a href="#prescriptions" class="nav-item" onclick="navigate('prescriptions')">
+                    <i class="fa-solid fa-file-prescription"></i> <span>Prescriptions</span>
+                </a>
+                <a href="#pharmacy" class="nav-item" onclick="navigate('pharmacy')">
+                    <i class="fa-solid fa-pills"></i> <span>Pharmacy</span>
+                </a>
+                <a href="#billing" class="nav-item" onclick="navigate('billing')">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> <span>Billing</span>
+                </a>
+                <a href="/swagger-ui/index.html" target="_blank" class="nav-item external-link">
+                    <i class="fa-solid fa-code"></i> <span>Swagger Docs</span> <i class="fa-solid fa-arrow-up-right-from-square nav-sub"></i>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn btn-logout btn-block" onclick="handleLogout()">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="page-title">
+                    <h2 id="sectionTitle">Dashboard Overview</h2>
+                    <span id="currentDate" class="date-display"></span>
+                </div>
+                <div class="topbar-actions">
+                    <span class="system-status"><span class="status-dot"></span> System Live</span>
+                    <a href="https://github.com/yashpsarode/hospital-management-system" target="_blank" class="github-pill">
+                        <i class="fa-brands fa-github"></i> <span>GitHub Repo</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Global Notification Banner -->
+            <div id="toastMessage" class="toast hidden"></div>
+
+            <!-- Content Container -->
+            <div class="content-body">
+
+                <!-- 1. DASHBOARD SECTION -->
+                <section id="section-dashboard" class="content-section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon bg-blue"><i class="fa-solid fa-user-doctor"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Active Doctors</span>
+                                <h3 id="statDoctorsCount">-</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-green"><i class="fa-solid fa-hospital-user"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Total Patients</span>
+                                <h3 id="statPatientsCount">-</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-purple"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Total Appointments</span>
+                                <h3 id="statAppointmentsCount">-</h3>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon bg-amber"><i class="fa-solid fa-pills"></i></div>
+                            <div class="stat-details">
+                                <span class="stat-label">Medicines In Stock</span>
+                                <h3 id="statMedicinesCount">-</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Action Bar -->
+                    <div class="quick-actions-card">
+                        <h4><i class="fa-solid fa-bolt"></i> Quick Workflow Actions</h4>
+                        <div class="quick-buttons">
+                            <button class="btn btn-primary" onclick="openModal('patientModal')">
+                                <i class="fa-solid fa-user-plus"></i> Register Patient
+                            </button>
+                            <button class="btn btn-secondary" onclick="openModal('appointmentModal')">
+                                <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+                            </button>
+                            <button class="btn btn-success" onclick="openModal('prescriptionModal')">
+                                <i class="fa-solid fa-file-prescription"></i> Issue Prescription
+                            </button>
+                            <button class="btn btn-info" onclick="openModal('medicineModal')">
+                                <i class="fa-solid fa-plus-circle"></i> Add Medicine
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Appointments & Low Stock Alert -->
+                    <div class="two-column-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> Upcoming Appointments</h4>
+                                <button class="btn btn-sm btn-outline" onclick="navigate('appointments')">View All</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Date & Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboardAppointmentsTbody">
+                                        <tr><td colspan="4" class="text-center">Loading appointments...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fa-solid fa-triangle-exclamation text-amber"></i> Pharmacy Stock Alerts</h4>
+                                <button class="btn btn-sm btn-outline" onclick="navigate('pharmacy')">View Pharmacy</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Medicine</th>
+                                            <th>Current Stock</th>
+                                            <th>Reorder Level</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboardStockTbody">
+                                        <tr><td colspan="4" class="text-center">Loading stock status...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. PATIENTS SECTION -->
+                <section id="section-patients" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Patient Directory</h4>
+                                <p class="subtext">View and manage all registered hospital patients</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('patientModal')">
+                                <i class="fa-solid fa-user-plus"></i> Add Patient
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Age / Gender</th>
+                                        <th>Blood Group</th>
+                                        <th>Contact</th>
+                                        <th>Emergency Contact</th>
+                                        <th>Registered Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientsTbody">
+                                    <tr><td colspan="7" class="text-center">Loading patients...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. DOCTORS SECTION -->
+                <section id="section-doctors" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Medical Specialists & Doctors</h4>
+                                <p class="subtext">Active departments, consultation fees, and availability</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Doctor Name</th>
+                                        <th>Specialty / Dept</th>
+                                        <th>Qualification</th>
+                                        <th>Consultation Fee</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="doctorsTbody">
+                                    <tr><td colspan="6" class="text-center">Loading doctors...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. APPOINTMENTS SECTION -->
+                <section id="section-appointments" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Appointments Schedule</h4>
+                                <p class="subtext">Bookings, consultations, and status updates</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('appointmentModal')">
+                                <i class="fa-solid fa-calendar-plus"></i> Book Appointment
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="appointmentsTbody">
+                                    <tr><td colspan="8" class="text-center">Loading appointments...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. PRESCRIPTIONS SECTION -->
+                <section id="section-prescriptions" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Issued Clinical Prescriptions</h4>
+                                <p class="subtext">Dosages, medicine courses, and pharmacy orders</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('prescriptionModal')">
+                                <i class="fa-solid fa-file-prescription"></i> Issue Prescription
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Patient</th>
+                                        <th>Doctor</th>
+                                        <th>Date</th>
+                                        <th>Diagnosis</th>
+                                        <th>Medicines & Dosage</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="prescriptionsTbody">
+                                    <tr><td colspan="6" class="text-center">Loading prescriptions...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. PHARMACY SECTION -->
+                <section id="section-pharmacy" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Pharmacy Inventory & Stock</h4>
+                                <p class="subtext">Batch numbers, expiration tracking, and stock refills</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="openModal('medicineModal')">
+                                <i class="fa-solid fa-plus-circle"></i> Add Medicine
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Medicine Name</th>
+                                        <th>Manufacturer</th>
+                                        <th>Batch #</th>
+                                        <th>Unit Price</th>
+                                        <th>Stock Level</th>
+                                        <th>Expiry Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pharmacyTbody">
+                                    <tr><td colspan="8" class="text-center">Loading pharmacy catalog...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. BILLING SECTION -->
+                <section id="section-billing" class="content-section">
+                    <div class="card">
+                        <div class="card-header">
+                            <div>
+                                <h4>Invoices & Patient Billing</h4>
+                                <p class="subtext">Consultation charges, pharmacy items, and payments</p>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Invoice #</th>
+                                        <th>Patient</th>
+                                        <th>Date</th>
+                                        <th>Total Amount</th>
+                                        <th>Paid Amount</th>
+                                        <th>Payment Method</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="billingTbody">
+                                    <tr><td colspan="8" class="text-center">Loading billing invoices...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: ADD PATIENT -->
+    <div id="patientModal" class="modal-backdrop hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Register New Patient</h3>
+                <button class="btn-close" onclick="closeModal('patientModal')">&times;</button>
+            </div>
+            <form onsubmit="submitPatient(event)">
+                <div class="modal-body form-grid">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="pFirstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="pLastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="pDob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="pGender" required>
+                            <option value="MALE">Male</option>
+                            <option value="FEMALE">Female</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Blood Group</label>
+                        <select id="pBloodGroup">
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" id="pPhone" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Address</label>
+                        <input type="text" id="pAddress">
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Contact Name</label>
+                        <input type="text" id="pEmergencyName">
+                    </div>
+                    <div class="form-group">
+                        <label>Emergency Phone</label>
+                        <input type="tel" id="pEmergencyPhone">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('patientModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: BOOK APPOINTMENT -->
+    <div id="appointmentModal" class="modal-backdrop hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Book Patient Appointment</h3>
+                <button class="btn-close" onclick="closeModal('appointmentModal')">&times;</button>
+            </div>
+            <form onsubmit="submitAppointment(event)">
+                <div class="modal-body form-grid">
+                    <div class="form-group">
+                        <label>Select Patient</label>
+                        <select id="aptPatientId" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Doctor</label>
+                        <select id="aptDoctorId" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Appointment Date</label>
+                        <input type="date" id="aptDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Appointment Time</label>
+                        <input type="time" id="aptTime" value="10:00" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Reason for Visit</label>
+                        <input type="text" id="aptReason" placeholder="Routine checkup, headache, fever..." required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('appointmentModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Confirm Booking</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ISSUE PRESCRIPTION -->
+    <div id="prescriptionModal" class="modal-backdrop hidden">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>Issue Clinical Prescription</h3>
+                <button class="btn-close" onclick="closeModal('prescriptionModal')">&times;</button>
+            </div>
+            <form onsubmit="submitPrescription(event)">
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Patient</label>
+                            <select id="rxPatientId" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Doctor</label>
+                            <select id="rxDoctorId" required></select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Clinical Diagnosis</label>
+                            <input type="text" id="rxDiagnosis" placeholder="e.g. Acute upper respiratory infection" required>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 1.5rem 0 0.5rem 0;">Prescribed Medicines</h4>
+                    <div id="prescriptionItemsContainer">
+                        <div class="rx-item form-grid">
+                            <div class="form-group">
+                                <label>Medicine</label>
+                                <select class="rx-med-id" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Dosage</label>
+                                <input type="text" class="rx-dosage" placeholder="500mg" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Frequency</label>
+                                <input type="text" class="rx-freq" placeholder="Twice daily after meals" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Duration (Days)</label>
+                                <input type="number" class="rx-duration" value="5" min="1" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('prescriptionModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Issue Prescription</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADD MEDICINE -->
+    <div id="medicineModal" class="modal-backdrop hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add Medicine to Pharmacy</h3>
+                <button class="btn-close" onclick="closeModal('medicineModal')">&times;</button>
+            </div>
+            <form onsubmit="submitMedicine(event)">
+                <div class="modal-body form-grid">
+                    <div class="form-group">
+                        <label>Medicine Name</label>
+                        <input type="text" id="mName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Manufacturer</label>
+                        <input type="text" id="mManufacturer" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Batch Number</label>
+                        <input type="text" id="mBatch" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Unit Price ($)</label>
+                        <input type="number" id="mPrice" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Initial Stock Quantity</label>
+                        <input type="number" id="mStock" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Reorder Alert Level</label>
+                        <input type="number" id="mReorder" value="20" min="1" required>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Expiration Date</label>
+                        <input type="date" id="mExpiry" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeModal('medicineModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save to Inventory</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
