@@ -8,23 +8,31 @@
 
 ---
 
-## 🔗 Quick Redirection Links & Access Points
+## 🔗 Project Links
 
-| Resource | Redirection Link | Description |
+- 👨‍💻 **Developer GitHub Profile**: [github.com/yashpsarode](https://github.com/yashpsarode)
+- 🏥 **Hospital Management System Repo**: [github.com/yashpsarode/hospital-management-system](https://github.com/yashpsarode/hospital-management-system)
+- 💼 **Companion Project (Software Asset Management)**: [github.com/yashpsarode/software-asset-management](https://github.com/yashpsarode/software-asset-management)
+
+---
+
+## 🌐 Application Endpoints & Navigation Paths
+
+When running the application, the following routes and interfaces are available on the application port (default `8080`):
+
+| Interface / Module | Endpoint Route | Description |
 |---|---|---|
-| 🌐 **Frontend Web Portal** | [`http://localhost:8080/`](http://localhost:8080/) | Complete single-page healthcare dashboard (Patients, Doctors, Appointments, Pharmacy, Billing) |
-| 📖 **Interactive Swagger UI** | [`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html) | OpenAPI 3.0 interactive REST API explorer with JWT authorization |
-| 📄 **OpenAPI Schema (JSON)** | [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs) | Raw OpenAPI 3.0 specification |
-| 🗄️ **H2 In-Memory DB Console** | [`http://localhost:8080/h2-console`](http://localhost:8080/h2-console) | In-memory database explorer *(when running with `--spring.profiles.active=h2`)* |
-| 👨‍💻 **GitHub Profile** | [`https://github.com/yashpsarode`](https://github.com/yashpsarode) | Yash Sarode's GitHub Profile |
-| 💼 **Software Asset Management** | [`https://github.com/yashpsarode/software-asset-management`](https://github.com/yashpsarode/software-asset-management) | Enterprise software asset & license tracking platform |
+| 🌐 **Frontend Web Portal** | `/` or `/index.html` | Complete single-page healthcare dashboard (Patients, Doctors, Appointments, Pharmacy, Billing) |
+| 📖 **Interactive Swagger UI** | `/swagger-ui/index.html` | OpenAPI 3.0 interactive REST API explorer with JWT authorization |
+| 📄 **OpenAPI Schema (JSON)** | `/v3/api-docs` | Raw OpenAPI 3.0 specification |
+| 🗄️ **H2 In-Memory DB Console** | `/h2-console` | In-memory database explorer *(when running with `--spring.profiles.active=h2`)* |
 
 ---
 
 ## 🌟 Key Highlights & Full-Stack Capabilities
 
 ### 💻 Frontend Web Portal (`/src/main/resources/static`)
-- **Unified Single-Application Execution**: The frontend is embedded directly within Spring Boot and served out-of-the-box at `http://localhost:8080/` without needing Node.js or a separate dev server.
+- **Unified Single-Application Execution**: The frontend is embedded directly within Spring Boot and served out-of-the-box at `/` without needing Node.js or a separate dev server.
 - **Role Switcher & Authentication**: Instant 1-click demo login buttons for Administrator, Doctor, Pharmacist, and Receptionist, plus self-registration.
 - **Real-Time KPIs**: Live dashboard metrics for total doctors, active patients, scheduled appointments, and pharmacy inventory levels.
 - **Patient Directory & Registration**: Register new patients, view emergency contacts, medical records, and blood groups.
@@ -70,14 +78,14 @@
 ## 🚀 Running the Project (Backend + Frontend Together)
 
 ### Option A: Standard Run (with MySQL)
-1. Ensure MySQL is running on `localhost:3306` with database credentials in `application.properties` (`root`/`root`).
+1. Ensure MySQL is running on port `3306` with database credentials in `application.properties` (`root`/`root`).
 2. Run the application:
    ```bash
    mvn spring-boot:run
    ```
 3. Open your browser and navigate to:
-   - **Frontend Portal**: [`http://localhost:8080/`](http://localhost:8080/)
-   - **Swagger UI**: [`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html)
+   - **Frontend Portal**: `http://localhost:8080/`
+   - **Swagger UI**: `http://localhost:8080/swagger-ui/index.html`
 
 ### Option B: Zero-Friction Run (In-Memory H2 — No MySQL needed)
 If you don't have MySQL installed, run with the embedded H2 profile:
